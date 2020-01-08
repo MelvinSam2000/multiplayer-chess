@@ -3,7 +3,7 @@ let gameQueue = []
 let turn = 0
 
 const errorHandler = (socket, message) => {
-    socket.emit("error", message)
+    //socket.emit("error", message)
 }
 
 module.exports = (server) => {
@@ -69,8 +69,9 @@ module.exports = (server) => {
         io.of("/game").to(room).emit("turnsAssigned", turn)
 
         // broadcast turn swapping
-        socket.on("turnDone", (socket) => {
-            io.of("/game").to(room).emit("turnSwap", {for: "everyone"})
+        socket.on("turnDone", (move) => {
+            console.log(move)
+            io.of("/game").to(room).emit("turnSwap", move, {for: "everyone"})
         })
         
     })
