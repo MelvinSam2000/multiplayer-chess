@@ -1,6 +1,16 @@
 import React from 'react'
 
 const charCoord = ["a", "b", "c", "d", "e", "f", "g", "h"]
+const charToIndex = {
+    "a": 0,
+    "b": 1,
+    "c": 2,
+    "d": 3,
+    "e": 4,
+    "f": 5,
+    "g": 6,
+    "h": 7
+}
 
 export default class ChessBoard extends React.Component {
 
@@ -31,6 +41,11 @@ export default class ChessBoard extends React.Component {
         let piece = this.state.pieceSelected.piece
 
         if (piece === "") {
+            // Chosen piece is of valid color
+            if (this.props.isWhite && this.state.chessTile[charPos][intPos][0] === "B"
+                || !this.props.isWhite && this.state.chessTile[charPos][intPos][0] === "W") {
+                return
+            } 
             this.setState({
                 pieceSelected: {
                     piece: this.state.chessTile[charPos][intPos],
@@ -49,9 +64,11 @@ export default class ChessBoard extends React.Component {
             if (oldPos === newPos) {
                 return
             }
-            this.movePiece(piece, oldPos, newPos)
+            let valid = this.movePiece(piece, oldPos, newPos)
             // end turn
-            this.props.changeTurn(piece, oldPos, newPos)
+            if (valid) {
+                this.props.changeTurn(piece, oldPos, newPos)
+            }
         }
     }
 
@@ -90,15 +107,66 @@ export default class ChessBoard extends React.Component {
     }
 
     movePiece = (piece, oldPos, newPos) => {
-        this.setState(state => {
-            // check move is valid 
-
-            // set new position
-            state.chessTile[newPos[0]][newPos[1]] = piece
-
-            // clear old position
-            state.chessTile[oldPos[0]][oldPos[1]] = "" 
-        })
+        // check move is valid
+        let valid = true
+        switch (piece[1]) {
+            // Pawns functionality
+            case "P":
+                // Pawns cant go backwards
+                if (piece[0] === "W" && oldPos[1] > newPos[1]
+                    || piece[0] === "B" && oldPos[1] < newPos[1]) {
+                        return false
+                } 
+                // Pawns can only go vertically, unless they can capture enemy piece
+                if (oldPos[0] !== newPos[0]) {
+                    let [oldCol, newCol] = [charToIndex[oldPos[0]], charToIndex[newPos[0]]]
+                    if (piece[0] === "W") {
+                        if (Math.abs(oldCol - newCol) === 1 && newPos[1] - oldPos[1] === 1) {
+                            if (this.state.chessTile[newPos[0]][newPos[1]] === "" 
+                                || this.state.chessTile[newPos[0]][newPos[1]][0] === "W") {
+                                return false
+                            }
+                        } else {
+                            return false
+                        }
+                    } else {
+                        if (Math.abs(oldCol - newCol) === 1 && oldPos[1] - newPos[1] === 1) {
+                            if (this.state.chessTile[newPos[0]][newPos[1]] === ""
+                                || this.state.chessTile[newPos[0]][newPos[1]][0] === "B") {
+                                return false
+                            }
+                        } else {
+                            return false
+                        }
+                    }
+                }
+                // Pawns can only move 1 ahead, or 2 at the begining, without colliding or passing
+                if (Math.abs(newPos[1] - oldPos[1]) > 2) {
+                    return false
+                }
+                if (Math.abs(newPos[1] - oldPos[1]) === 2) {
+                    if (oldPos[1] !== "1" && oldPos[1] !== "6"
+                        || newPos[1] === "3" && this.state.chessTile[newPos[0]][2] !== ""
+                        || newPos[1] === "4" && this.state.chessTile[newPos[0]][5] !== "") {
+                        return false
+                    }
+                }
+                if (oldPos[0] === newPos[0] && this.state.chessTile[newPos[0]][newPos[1]] !== "") {
+                    return false
+                }
+                break
+            default:
+                break
+        }
+        if (valid) {
+            this.setState(state => {
+                // set new position
+                state.chessTile[newPos[0]][newPos[1]] = piece
+                // clear old position
+                state.chessTile[oldPos[0]][oldPos[1]] = "" 
+            })
+        }
+        return valid
     }
 
     render() {

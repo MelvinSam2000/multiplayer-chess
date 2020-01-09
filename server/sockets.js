@@ -70,7 +70,6 @@ module.exports = (server) => {
 
         // broadcast turn swapping
         socket.on("turnDone", (move) => {
-            console.log(move)
             io.of("/game").to(room).emit("turnSwap", move, {for: "everyone"})
         })
         
