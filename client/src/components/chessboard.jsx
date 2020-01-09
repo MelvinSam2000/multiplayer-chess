@@ -107,73 +107,106 @@ export default class ChessBoard extends React.Component {
     }
 
     movePiece = (piece, oldPos, newPos) => {
+
         // check move is valid
         let valid = true
-        switch (piece[1]) {
-            // Pawns functionality
-            case "P":
-                // Pawns cant go backwards
-                if (piece[0] === "W" && oldPos[1] > newPos[1]
-                    || piece[0] === "B" && oldPos[1] < newPos[1]) {
-                        return false
-                } 
-                // Pawns can only go vertically, unless they can capture enemy piece
-                if (oldPos[0] !== newPos[0]) {
-                    let [oldCol, newCol] = [charToIndex[oldPos[0]], charToIndex[newPos[0]]]
-                    if (piece[0] === "W") {
-                        if (Math.abs(oldCol - newCol) === 1 && newPos[1] - oldPos[1] === 1) {
-                            if (this.state.chessTile[newPos[0]][newPos[1]] === "" 
-                                || this.state.chessTile[newPos[0]][newPos[1]][0] === "W") {
+        if (piece[0] === "W" && !this.props.isWhite || piece[0] === "B" && this.props.isWhite) {
+            // skip move validation
+        } else {
+            switch (piece[1]) {
+                // Pawns functionality
+                case "P":
+                    // Pawns cant go backwards
+                    if (piece[0] === "W" && oldPos[1] > newPos[1]
+                        || piece[0] === "B" && oldPos[1] < newPos[1]) {
+                            return false
+                    } 
+                    // Pawns can only go vertically, unless they can capture enemy piece
+                    if (oldPos[0] !== newPos[0]) {
+                        let [oldCol, newCol] = [charToIndex[oldPos[0]], charToIndex[newPos[0]]]
+                        if (piece[0] === "W") {
+                            if (Math.abs(oldCol - newCol) === 1 && newPos[1] - oldPos[1] === 1) {
+                                if (this.state.chessTile[newPos[0]][newPos[1]] === "" 
+                                    || this.state.chessTile[newPos[0]][newPos[1]][0] === "W") {
+                                    return false
+                                }
+                            } else {
                                 return false
                             }
                         } else {
+                            if (Math.abs(oldCol - newCol) === 1 && oldPos[1] - newPos[1] === 1) {
+                                if (this.state.chessTile[newPos[0]][newPos[1]] === ""
+                                    || this.state.chessTile[newPos[0]][newPos[1]][0] === "B") {
+                                    return false
+                                }
+                            } else {
+                                return false
+                            }
+                        }
+                    }
+                    // Pawns can only move 1 ahead, or 2 at the begining, without colliding or passing
+                    if (Math.abs(newPos[1] - oldPos[1]) > 2) {
+                        return false
+                    }
+                    if (Math.abs(newPos[1] - oldPos[1]) === 2) {
+                        if (oldPos[1] !== "1" && oldPos[1] !== "6"
+                            || newPos[1] === "3" && this.state.chessTile[newPos[0]][2] !== ""
+                            || newPos[1] === "4" && this.state.chessTile[newPos[0]][5] !== "") {
                             return false
+                        }
+                    }
+                    if (oldPos[0] === newPos[0] && this.state.chessTile[newPos[0]][newPos[1]] !== "") {
+                        return false
+                    }
+                    break
+                case "R":
+                    // can only move in the same column or row
+                    if (oldPos[0] !== newPos[0] && oldPos[1] !== newPos[1]) {
+                        return false
+                    }
+                    // cannot skip pieces
+                    if (oldPos[0] !== newPos[0]) {
+                        let [oldCol, newCol] = [charToIndex[oldPos[0]], charToIndex[newPos[0]]]
+                        let [smallest, largest] = [oldCol, newCol].sort()
+                        for (let i = smallest + 1; i < largest; i++) {
+                            console.log(i)
+                            if (this.state.chessTile[charCoord[i]][oldPos[1]] !== "") {
+                                return false
+                            }
                         }
                     } else {
-                        if (Math.abs(oldCol - newCol) === 1 && oldPos[1] - newPos[1] === 1) {
-                            if (this.state.chessTile[newPos[0]][newPos[1]] === ""
-                                || this.state.chessTile[newPos[0]][newPos[1]][0] === "B") {
+                        let [smallest, largest] = [parseInt(oldPos[1]), parseInt(newPos[1])].sort()
+                        for (let i = smallest + 1; i < largest; i++) {
+                            console.log(i)
+                            if (this.state.chessTile[oldPos[0]][i] !== "") {
                                 return false
                             }
-                        } else {
-                            return false
                         }
                     }
-                }
-                // Pawns can only move 1 ahead, or 2 at the begining, without colliding or passing
-                if (Math.abs(newPos[1] - oldPos[1]) > 2) {
-                    return false
-                }
-                if (Math.abs(newPos[1] - oldPos[1]) === 2) {
-                    if (oldPos[1] !== "1" && oldPos[1] !== "6"
-                        || newPos[1] === "3" && this.state.chessTile[newPos[0]][2] !== ""
-                        || newPos[1] === "4" && this.state.chessTile[newPos[0]][5] !== "") {
+                    // cannot eat same color
+                    if (this.state.chessTile[newPos[0]][newPos[1]][0] === piece[0]) {
                         return false
                     }
-                }
-                if (oldPos[0] === newPos[0] && this.state.chessTile[newPos[0]][newPos[1]] !== "") {
-                    return false
-                }
-                break
-            case "R":
-                break
-            case "N":
-                // Cannot collide with same color pieces
-                if (this.state.chessTile[newPos[0]][newPos[1]][0] == piece[0]) {
-                    return false
-                }
-                // Verify L movement
-                let [oldCol, newCol] = [charToIndex[oldPos[0]], charToIndex[newPos[0]]]
-                if (Math.abs(oldCol - newCol) === 1 && Math.abs(oldPos[1] - newPos[1]) === 2 
-                    || Math.abs(oldCol - newCol) === 2 && Math.abs(oldPos[1] - newPos[1]) === 1) {
-                        // valid
-                } else {
-                    return false
-                }
-                break
-            default:
-                break
+                    break
+                case "N":
+                    // Cannot collide with same color pieces
+                    if (this.state.chessTile[newPos[0]][newPos[1]][0] == piece[0]) {
+                        return false
+                    }
+                    // Verify L movement
+                    let [oldCol, newCol] = [charToIndex[oldPos[0]], charToIndex[newPos[0]]]
+                    if (Math.abs(oldCol - newCol) === 1 && Math.abs(oldPos[1] - newPos[1]) === 2 
+                        || Math.abs(oldCol - newCol) === 2 && Math.abs(oldPos[1] - newPos[1]) === 1) {
+                            // valid
+                    } else {
+                        return false
+                    }
+                    break
+                default:
+                    break
+            }
         }
+       
         if (valid) {
             this.setState(state => {
                 // set new position
