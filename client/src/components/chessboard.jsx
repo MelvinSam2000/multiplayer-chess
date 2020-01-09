@@ -155,6 +155,22 @@ export default class ChessBoard extends React.Component {
                     return false
                 }
                 break
+            case "R":
+                break
+            case "N":
+                // Cannot collide with same color pieces
+                if (this.state.chessTile[newPos[0]][newPos[1]][0] == piece[0]) {
+                    return false
+                }
+                // Verify L movement
+                let [oldCol, newCol] = [charToIndex[oldPos[0]], charToIndex[newPos[0]]]
+                if (Math.abs(oldCol - newCol) === 1 && Math.abs(oldPos[1] - newPos[1]) === 2 
+                    || Math.abs(oldCol - newCol) === 2 && Math.abs(oldPos[1] - newPos[1]) === 1) {
+                        // valid
+                } else {
+                    return false
+                }
+                break
             default:
                 break
         }
