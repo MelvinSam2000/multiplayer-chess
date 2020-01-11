@@ -202,6 +202,31 @@ export default class ChessBoard extends React.Component {
                         return false
                     }
                     break
+                case "B":
+                    // Can only move diagonally
+                    let [oldcol, newcol] = [charToIndex[oldPos[0]], charToIndex[newPos[0]]]
+                    let [oldrow, newrow] = [parseInt(oldPos[1]), parseInt(newPos[1])]
+                    if (Math.abs(oldcol - newcol) !== Math.abs(oldrow - newrow)) {
+                        return false
+                    }
+                    // Cannot skip piece
+                    for (let i = 1; i < Math.abs(oldcol - newcol); i++) {
+                        let [r, c] = [1, 1]
+                        if (newcol < oldcol) {
+                            c = -1
+                        }
+                        if (newrow < oldrow) {
+                            r = -1
+                        }
+                        if (this.state.chessTile[charCoord[oldcol + i*c]][oldrow + i*r] !== "") {
+                            return false
+                        }
+                    }
+                    // Cannot eat same color
+                    if (this.state.chessTile[newPos[0]][newPos[1]][0] === piece[0]) {
+                        return false
+                    }
+                    break
                 default:
                     break
             }
