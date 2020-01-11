@@ -1,5 +1,6 @@
 import React from 'react'
 import { Route } from 'react-router-dom'
+import '../css/home.css'
 
 export default class Home extends React.Component {
 
@@ -16,7 +17,7 @@ export default class Home extends React.Component {
 
     render() {
         return (
-            <div>
+            <div className="Form">
                 <Route render={() => (
                     <form onSubmit={() => { 
                         this.props.history.push({
@@ -26,10 +27,11 @@ export default class Home extends React.Component {
                             }
                         })
                     }}>
-                        <div>
+                        <h1>
                             Enter a username! <br/>
-                        </div>
-                        <input type="text" 
+                        </h1>
+                        <input 
+                            type="text" 
                             value={this.state.userField} 
                             onChange={this.textChangeHandler}/>
                         <input type="submit" />

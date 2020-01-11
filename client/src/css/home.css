@@ -1,0 +1,45 @@
+Form {
+    width: 360px;
+    height: 240px;
+    top: 50%;
+    left: 50%;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    background-color: black;
+    border: 5px solid white;
+    font-family: Arial, Helvetica, sans-serif;
+    color: azure;
+}
+
+.Form h1 {
+    margin-top: 10px;
+    text-align: center;
+    font-size: 30px;
+}
+
+.Form label {
+    font-size: 14px;
+    display: inline-block;
+    float: left;
+    padding-top: 15px;
+    padding-left: 20px;
+}
+
+.Form input {
+    display: inline-block;
+    margin-top: 10px;
+    float: left;
+    margin-left: 30px;
+}
+
+.Form input[type=submit] {
+    background: black;
+    color: white;
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.Form .button:hover {
+    background: white;
+    color: black;
+}
