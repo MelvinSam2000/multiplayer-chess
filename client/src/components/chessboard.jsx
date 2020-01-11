@@ -169,7 +169,6 @@ export default class ChessBoard extends React.Component {
                         let [oldCol, newCol] = [charToIndex[oldPos[0]], charToIndex[newPos[0]]]
                         let [smallest, largest] = [oldCol, newCol].sort()
                         for (let i = smallest + 1; i < largest; i++) {
-                            console.log(i)
                             if (this.state.chessTile[charCoord[i]][oldPos[1]] !== "") {
                                 return false
                             }
@@ -177,7 +176,6 @@ export default class ChessBoard extends React.Component {
                     } else {
                         let [smallest, largest] = [parseInt(oldPos[1]), parseInt(newPos[1])].sort()
                         for (let i = smallest + 1; i < largest; i++) {
-                            console.log(i)
                             if (this.state.chessTile[oldPos[0]][i] !== "") {
                                 return false
                             }
@@ -227,6 +225,53 @@ export default class ChessBoard extends React.Component {
                         return false
                     }
                     break
+                case "Q":
+                    let [oldc, newc] = [charToIndex[oldPos[0]], charToIndex[newPos[0]]]
+                    let [oldr, newr] = [parseInt(oldPos[1]), parseInt(newPos[1])]
+                    // Can only move diagonally or vertically
+                    if (Math.abs(oldc - newc) !== Math.abs(oldr - newr) 
+                        && (oldc !== newc && oldr !== newr)) {
+                        return false
+                    }
+                    // Cannot skip piece when moving straight
+                    if (oldc === newc || oldr === newr) {
+                        if (oldc !== newc) {
+                            let [smallest, largest] = [oldc, newc].sort()
+                            for (let i = smallest + 1; i < largest; i++) {
+                                if (this.state.chessTile[charCoord[i]][oldr] !== "") {
+                                    return false
+                                }
+                            }
+                        } else {
+                            let [smallest, largest] = [oldr, newr].sort()
+                            for (let i = smallest + 1; i < largest; i++) {
+                                if (this.state.chessTile[charCoord[oldc]][i] !== "") {
+                                    return false
+                                }
+                            }
+                        }
+                    }
+                    
+                    // Cannot skip piece diagonally
+                    if (Math.abs(oldc - newc) === Math.abs(oldr - newr)) {
+                        for (let i = 1; i < Math.abs(oldc - newc); i++) {
+                            let [r, c] = [1, 1]
+                            if (newc < oldc) {
+                                c = -1
+                            }
+                            if (newr < oldr) {
+                                r = -1
+                            }
+                            if (this.state.chessTile[charCoord[oldc + i*c]][oldr + i*r] !== "") {
+                                return false
+                            }
+                        }
+                    }
+                    
+                    // Cannot eat same color
+                    if (this.state.chessTile[newPos[0]][newPos[1]][0] === piece[0]) {
+                        return false
+                    }
                 default:
                     break
             }
