@@ -272,6 +272,18 @@ export default class ChessBoard extends React.Component {
                     if (this.state.chessTile[newPos[0]][newPos[1]][0] === piece[0]) {
                         return false
                     }
+                case "K":
+                    let [oldC, newC] = [charToIndex[oldPos[0]], charToIndex[newPos[0]]]
+                    let [oldR, newR] = [parseInt(oldPos[1]), parseInt(newPos[1])]
+                    // Can only move 1 tile any direction
+                    if (Math.abs(oldC - newC) > 1 || Math.abs(oldR - newR) > 1) {
+                        return false
+                    }
+                    // Cannot eat same color
+                    if (this.state.chessTile[newPos[0]][newPos[1]][0] === piece[0]) {
+                        return false
+                    }
+                    break
                 default:
                     break
             }
