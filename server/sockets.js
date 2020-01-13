@@ -12,10 +12,12 @@ module.exports = (server) => {
 
     // Handle user connecting to server
     io.of("/lobby").on("connection", (socket) => {
-        
+
         // Handle user connected
         const user = socket.request._query["user"]
-        onlineUsers.push(user)
+        if (!onlineUsers.includes(user)) {
+            onlineUsers.push(user)
+        }
         console.log(`${user} is now online!`)
 
         // handle disconnection
@@ -42,6 +44,13 @@ module.exports = (server) => {
             errorHandler(socket, "User not recognized")
             return
         }
+
+        // Check user already in lobby
+        if (gameQueue.includes(user)) {
+            errorHandler(socket, "User already in lobby")
+            return
+        }
+
 
         gameQueue.push(user)
 
@@ -71,6 +80,11 @@ module.exports = (server) => {
         // broadcast turn swapping
         socket.on("turnDone", (move) => {
             io.of("/game").to(room).emit("turnSwap", move, {for: "everyone"})
+        })
+
+        // broadcast a checkmate
+        socket.on("checkMate", (user) => {
+            io.of("/game").to(room).emit("gameOver", user, {for: "everyone"})
         })
         
     })

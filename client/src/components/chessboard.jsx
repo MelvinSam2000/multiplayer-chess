@@ -348,6 +348,9 @@ export default class ChessBoard extends React.Component {
                         </td>
                         })} </tr>
                 })} </table>
+                <button onClick={this.props.checkMate}>
+                    Click here to win!
+                </button>
             </div>
         )
     }

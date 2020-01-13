@@ -49,12 +49,27 @@ export default class Game extends React.Component {
 
         // handle turn switching
         this.socket.on("turnSwap", (move) => {
-            console.log(move)
             let [piece, oldPos, newPos] = move
             this.child.current.movePiece(piece, oldPos, newPos)
             this.setState((state) => ({
                 myTurn: !state.myTurn
             }))
+        })
+
+        // handle game over
+        this.socket.on("gameOver", (user) => {
+            console.log(user)
+            if (this.user === user) {
+                alert("You win!")
+            } else {
+                alert("You lose!")
+            }
+            this.props.history.push({
+                pathname: "/lobby",
+                state: {
+                    user: this.user
+                }
+            })
         })
 
         // handle server crash
@@ -65,6 +80,10 @@ export default class Game extends React.Component {
 
     changeTurn = (piece, oldPos, newPos) => {
         this.socket.emit("turnDone", [piece, oldPos, newPos])
+    }
+
+    checkMate = () => {
+        this.socket.emit("checkMate", this.user)
     }
 
     render() {
@@ -92,7 +111,9 @@ export default class Game extends React.Component {
                         isWhite={this.state.first} 
                         myTurn={this.state.myTurn}
                         chessTile={this.state.chessTile}
-                        changeTurn={this.changeTurn}/>
+                        changeTurn={this.changeTurn}
+                        checkMate={this.checkMate}
+                    />
                 </div>
                 <div>
 
