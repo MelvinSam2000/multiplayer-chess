@@ -20,7 +20,6 @@ Form {
 .Form label {
     font-size: 14px;
     display: inline-block;
-    float: left;
     padding-top: 15px;
     padding-left: 20px;
 }
@@ -28,7 +27,6 @@ Form {
 .Form input {
     display: inline-block;
     margin-top: 10px;
-    float: left;
     margin-left: 30px;
 }
 
@@ -39,7 +37,7 @@ Form {
     margin-right: 10px;
 }
 
-.Form .button:hover {
+.Form input[type=submit]:hover {
     background: white;
     color: black;
 }

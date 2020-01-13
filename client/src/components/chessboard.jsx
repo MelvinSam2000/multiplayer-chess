@@ -1,4 +1,5 @@
 import React from 'react'
+import '../css/chessboard.css'
 
 const charCoord = ["a", "b", "c", "d", "e", "f", "g", "h"]
 const charToIndex = {
@@ -10,6 +11,21 @@ const charToIndex = {
     "f": 5,
     "g": 6,
     "h": 7
+}
+const pieceFontMap = {
+    "WP": "p",
+    "WR": "r",
+    "WB": "b",
+    "WN": "n",
+    "WQ": "q",
+    "WK": "k",
+    "BP": "o",
+    "BR": "t",
+    "BB": "v",
+    "BN": "m",
+    "BQ": "w",
+    "BK": "l",
+    "": ""
 }
 
 export default class ChessBoard extends React.Component {
@@ -25,7 +41,8 @@ export default class ChessBoard extends React.Component {
                     int: ""
                 }
             },
-            chessTile: props.chessTile
+            chessTile: props.chessTile,
+            tileColor: true
         }
     }
 
@@ -42,8 +59,8 @@ export default class ChessBoard extends React.Component {
 
         if (piece === "") {
             // Chosen piece is of valid color
-            if (this.props.isWhite && this.state.chessTile[charPos][intPos][0] === "B"
-                || !this.props.isWhite && this.state.chessTile[charPos][intPos][0] === "W") {
+            if ((this.props.isWhite && this.state.chessTile[charPos][intPos][0] === "B")
+                || (!this.props.isWhite && this.state.chessTile[charPos][intPos][0] === "W")) {
                 return
             } 
             this.setState({
@@ -74,7 +91,7 @@ export default class ChessBoard extends React.Component {
 
     setInitialPosition = () => {
         // Set pawns
-        Object.keys(this.state.chessTile).map((char, i) => {
+        Object.keys(this.state.chessTile).forEach((char, i) => {
             this.setState(state => {
                 state.chessTile[char][1] = "WP"
                 state.chessTile[char][6] = "BP"
@@ -110,15 +127,15 @@ export default class ChessBoard extends React.Component {
 
         // check move is valid
         let valid = true
-        if (piece[0] === "W" && !this.props.isWhite || piece[0] === "B" && this.props.isWhite) {
+        if ((piece[0] === "W" && !this.props.isWhite) || (piece[0] === "B" && this.props.isWhite)) {
             // skip move validation
         } else {
             switch (piece[1]) {
                 // Pawns functionality
                 case "P":
                     // Pawns cant go backwards
-                    if (piece[0] === "W" && oldPos[1] > newPos[1]
-                        || piece[0] === "B" && oldPos[1] < newPos[1]) {
+                    if ((piece[0] === "W" && oldPos[1] > newPos[1])
+                        || (piece[0] === "B" && oldPos[1] < newPos[1])) {
                             return false
                     } 
                     // Pawns can only go vertically, unless they can capture enemy piece
@@ -149,9 +166,9 @@ export default class ChessBoard extends React.Component {
                         return false
                     }
                     if (Math.abs(newPos[1] - oldPos[1]) === 2) {
-                        if (oldPos[1] !== "1" && oldPos[1] !== "6"
-                            || newPos[1] === "3" && this.state.chessTile[newPos[0]][2] !== ""
-                            || newPos[1] === "4" && this.state.chessTile[newPos[0]][5] !== "") {
+                        if ((oldPos[1] !== "1" && oldPos[1] !== "6")
+                            || (newPos[1] === "3" && this.state.chessTile[newPos[0]][2] !== "")
+                            || (newPos[1] === "4" && this.state.chessTile[newPos[0]][5] !== "")) {
                             return false
                         }
                     }
@@ -188,13 +205,13 @@ export default class ChessBoard extends React.Component {
                     break
                 case "N":
                     // Cannot collide with same color pieces
-                    if (this.state.chessTile[newPos[0]][newPos[1]][0] == piece[0]) {
+                    if (this.state.chessTile[newPos[0]][newPos[1]][0] === piece[0]) {
                         return false
                     }
                     // Verify L movement
                     let [oldCol, newCol] = [charToIndex[oldPos[0]], charToIndex[newPos[0]]]
-                    if (Math.abs(oldCol - newCol) === 1 && Math.abs(oldPos[1] - newPos[1]) === 2 
-                        || Math.abs(oldCol - newCol) === 2 && Math.abs(oldPos[1] - newPos[1]) === 1) {
+                    if ((Math.abs(oldCol - newCol) === 1 && Math.abs(oldPos[1] - newPos[1]) === 2) 
+                        || (Math.abs(oldCol - newCol) === 2 && Math.abs(oldPos[1] - newPos[1]) === 1)) {
                             // valid
                     } else {
                         return false
@@ -269,9 +286,10 @@ export default class ChessBoard extends React.Component {
                     }
                     
                     // Cannot eat same color
-                    if (this.state.chessTile[newPos[0]][newPos[1]][0] === piece[0]) {
+                    if (this.state.chessTile[charCoord[newc]][newr][0] === piece[0]) {
                         return false
                     }
+                    break
                 case "K":
                     let [oldC, newC] = [charToIndex[oldPos[0]], charToIndex[newPos[0]]]
                     let [oldR, newR] = [parseInt(oldPos[1]), parseInt(newPos[1])]
@@ -308,9 +326,9 @@ export default class ChessBoard extends React.Component {
 
         return (
             <div> 
-                {this.props.isWhite ? ("WHITE") : ("BLACK")} <br/>
-                {this.state.pieceSelected.piece === "" ? ("") : (`Selected: ${JSON.stringify(this.state.pieceSelected)}`)} <br/>
-                <table> {
+                <table 
+                    className="Board"
+                    cellSpacing="0"> {
                     Array(8).fill().map((_, i) => {
                         if (this.props.isWhite) {
                             i = 7 - i
@@ -320,12 +338,14 @@ export default class ChessBoard extends React.Component {
                                 j = 7 - j
                             }
                             let char = charCoord[j]
-                            let pos = `${char}${i}`
-                            return <td id={pos}>
-                                <button onClick={() => this.updatePosition([char, i])}>
-                                    {this.state.chessTile[char][i]}
-                                </button>
-                            </td>
+                            return <td id={[i, j]}>
+                            <button 
+                                className="Tile"
+                                style={{backgroundColor: (i + j) % 2 === 0 ? "#38DE2C": "#FFFFFF"}}
+                                onClick={() => this.updatePosition([char, i])}>
+                                {pieceFontMap[this.state.chessTile[char][i]]}
+                            </button>
+                        </td>
                         })} </tr>
                 })} </table>
             </div>

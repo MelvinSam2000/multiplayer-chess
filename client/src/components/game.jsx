@@ -1,7 +1,7 @@
 import React from 'react'
 import io from 'socket.io-client'
-
 import ChessBoard from './chessboard'
+import '../css/game.css'
 
 const port = process.env.PORT || 8000
 const serverURL = `http://localhost:${port}`
@@ -74,23 +74,25 @@ export default class Game extends React.Component {
         }
         return (
             <div>
+                <div className="GameBox">
                 <div>
+                    Playing against {this.rival}
+                </div>
+                {this.state.myTurn ? (
+                    <div>
+                        Your turn!
+                    </div>
+                ) : (
+                    <div>
+                        Waiting...
+                    </div>
+                )}
                     <ChessBoard 
                         ref={this.child}
                         isWhite={this.state.first} 
                         myTurn={this.state.myTurn}
                         chessTile={this.state.chessTile}
                         changeTurn={this.changeTurn}/>
-                    {this.state.myTurn ? (
-                        <div>
-                            Your turn!
-                        </div>
-                    ) : (
-                        <div>
-                            Waiting...
-                        </div>
-                    )}
-
                 </div>
                 <div>
 

@@ -1,6 +1,7 @@
 import React from 'react'
 import { Route } from 'react-router-dom'
 import io from 'socket.io-client'
+import "../css/lobby.css"
 
 const port = process.env.PORT || 8000
 const serverURL = `http://localhost:${port}`
@@ -56,7 +57,7 @@ export default class Lobby extends React.Component {
         return (
             <div>
                 {!this.state.isSearching ? (
-                    <div>
+                    <div className="Box">
                         <div>
                             Welcome user {this.user} <br/>
                         </div>
@@ -73,7 +74,7 @@ export default class Lobby extends React.Component {
                         
                     </div>
                 ) : (
-                    <div>
+                    <div className="Box">
                         <div>
                             Searching... <br/>
                         </div>
