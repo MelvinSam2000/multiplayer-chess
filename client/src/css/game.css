@@ -1,0 +1,22 @@
+.GameBox {
+    height: 600px;
+    width: 600px;
+    top: 50%;
+    left: 50%;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    background-color: black;
+    border: 5px solid white;
+    font-family: Arial, Helvetica, sans-serif;
+    color: azure;
+}
+
+.GameBox h1 {
+    margin-top: 10px;
+    text-align: center;
+    font-size: 30px;
+}
+
+.GameBox label {
+    margin-top: 20px;
+}

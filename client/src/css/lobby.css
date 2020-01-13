@@ -1,0 +1,44 @@
+.Box {
+    height: 240px;
+    width: 400px;
+    top: 30%;
+    left: 50%;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    background-color: black;
+    border: 5px solid white;
+    font-family: Arial, Helvetica, sans-serif;
+    color: azure;
+}
+
+.Box h1 {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 30px;
+}
+
+.Box label {
+    margin-top: 20px;
+    font-size: 14px;
+    display: inline-block;
+    padding-top: 15px;
+    padding-left: 20px;
+}
+
+.Box input {
+    display: inline-block;
+    margin-top: 10px;
+    margin-left: 30px;
+}
+
+.Box button {
+    background: black;
+    color: white;
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.Box .button:hover {
+    background: white;
+    color: black;
+}

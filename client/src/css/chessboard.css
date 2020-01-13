@@ -1,0 +1,33 @@
+.Board {
+    text-align: center;
+    height: 400px;
+    position: absolute;
+    margin-top: 10px;
+    margin-left: 30px;
+}
+
+.Board table * {
+    border-spacing: 0;
+    table-layout: fixed;
+    padding: 0px;
+    border: none;
+    border-collapse: collapse;
+    padding: 0;
+    margin: 0;
+}
+
+@font-face {
+    font-family: chessPiece;
+    src: url('../assets/chessfont.ttf') format('truetype');
+  }
+
+.Tile {
+    vertical-align: top;
+    border: none;
+    display: inline-block;
+    height: 50px;
+    width: 50px;
+    font-family: chessPiece;
+    font-size: 36px;
+}
+
