@@ -1,10 +1,9 @@
+require("dotenv").config()
 const express = require("express")
-
 const app = express()
 
-// TODO: Remove this later
-app.get("/", (req, res) => {
-    res.json({"message": "Hello World"})
-})
+const userRouter = require("./api/routes/user_routes")
+
+app.use("/user", userRouter)
 
 module.exports = app
