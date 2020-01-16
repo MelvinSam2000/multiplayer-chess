@@ -6,6 +6,8 @@ import Game from './components/game'
 import Home from './components/home'
 import Lobby from './components/lobby'
 
+require("dotenv").config()
+
 class App extends React.Component {
 
   render() {

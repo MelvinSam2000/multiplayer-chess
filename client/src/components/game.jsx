@@ -3,8 +3,9 @@ import io from 'socket.io-client'
 import ChessBoard from './chessboard'
 import '../css/game.css'
 
+const host = process.env.REACT_APP_SERVER_HOST
 const port = process.env.PORT || 8000
-const serverURL = `http://localhost:${port}`
+const serverURL = `${host}:${port}`
 
 export default class Game extends React.Component {
 

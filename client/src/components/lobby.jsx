@@ -3,8 +3,9 @@ import { Route } from 'react-router-dom'
 import io from 'socket.io-client'
 import "../css/lobby.css"
 
+const host = process.env.REACT_APP_SERVER_HOST
 const port = process.env.PORT || 8000
-const serverURL = `http://localhost:${port}`
+const serverURL = `${host}:${port}`
 
 export default class Lobby extends React.Component {
 
