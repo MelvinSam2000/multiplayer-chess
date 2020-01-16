@@ -28,7 +28,9 @@ router.get("/:id", (req, res) => {
             errorHandler(res, 404, error)
             return
         }
-        delete results.rows[0].password_hash
+        if (results.rows.length !== 0) {
+            delete results.rows[0].password_hash
+        }
         res.status(200).json(results.rows[0])
     })
 })
