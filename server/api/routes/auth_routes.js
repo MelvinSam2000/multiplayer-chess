@@ -6,7 +6,7 @@ const jwt = require("jsonwebtoken")
 
 const JWT_KEY = process.env.JWT_KEY
 
-router.post("/login", (req, res) => {
+router.post("/", (req, res) => {
     const {username, password} = req.body
     const query = "SELECT * FROM Users WHERE username = $1"
     db.query(query, [username], (error, results) => {
