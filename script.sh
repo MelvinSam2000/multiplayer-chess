@@ -10,4 +10,6 @@ then
 elif [ "$input" == "deployclient" ] 
 then
     git subtree push --prefix client heroku-client master
+else
+    echo "Usage: ./script.sh <argument> "
 fi
