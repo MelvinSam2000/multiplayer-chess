@@ -12,8 +12,7 @@
     "socket.io": "^2.3.0"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "deploy": "git subtree push --prefix client heroku-client master"
+    "start": "react-scripts start"
   },
   "eslintConfig": {
     "extends": "react-app"
