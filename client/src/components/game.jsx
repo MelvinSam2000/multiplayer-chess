@@ -11,10 +11,8 @@ export default class Game extends React.Component {
 
     constructor(props) {
         super(props)
-        this.child = React.createRef()
         this.user = this.props.location.state.user
         this.rival = this.props.location.state.rival
-        this.socket = io.connect(`${serverURL}/game`, {query: `user=${this.user}&rival=${this.rival}`})
         this.state = {
             loaded: false,
             first: false,
@@ -28,11 +26,14 @@ export default class Game extends React.Component {
                 "f": Array(8).fill(""),
                 "g": Array(8).fill(""),
                 "h": Array(8).fill("")
-            }
+            },
+            winner: ""
         }
     }
 
     componentDidMount() {
+
+        this.socket = io.connect(`${serverURL}/game`, {query: `user=${this.user}&rival=${this.rival}`})
 
         // assign turns of initial state
         this.socket.on("turnsAssigned", (turn) => {
@@ -51,7 +52,12 @@ export default class Game extends React.Component {
         // handle turn switching
         this.socket.on("turnSwap", (move) => {
             let [piece, oldPos, newPos] = move
-            this.child.current.movePiece(piece, oldPos, newPos)
+            this.setState(state => {
+                // set new position
+                state.chessTile[newPos[0]][newPos[1]] = piece
+                // clear old position
+                state.chessTile[oldPos[0]][oldPos[1]] = "" 
+            })
             this.setState((state) => ({
                 myTurn: !state.myTurn
             }))
@@ -59,17 +65,18 @@ export default class Game extends React.Component {
 
         // handle game over
         this.socket.on("gameOver", (user) => {
-            console.log(user)
-            if (this.user === user) {
-                alert("You win!")
-            } else {
-                alert("You lose!")
-            }
-            this.props.history.push({
-                pathname: "/lobby",
-                state: {
-                    user: this.user
-                }
+            this.setState({
+                myTurn: false,
+                winner: user
+            })
+        })
+
+        // handle opponent left
+        this.socket.on("opponentLeft", () => {
+            alert(`Opponent ${this.rival} has left...`)
+            this.setState({
+                myTurn: false,
+                winner: this.user
             })
         })
 
@@ -87,6 +94,16 @@ export default class Game extends React.Component {
         this.socket.emit("checkMate", this.user)
     }
 
+    goBack = () => {
+        this.socket.disconnect()
+        this.props.history.push({
+            pathname: "/lobby",
+            state: {
+                user: this.user
+            }
+        })
+    }
+
     render() {
 
         if (!this.state.loaded) {
@@ -95,20 +112,7 @@ export default class Game extends React.Component {
         return (
             <div>
                 <div className="GameBox">
-                <div>
-                    Playing against {this.rival}
-                </div>
-                {this.state.myTurn ? (
-                    <div>
-                        Your turn!
-                    </div>
-                ) : (
-                    <div>
-                        Waiting...
-                    </div>
-                )}
                     <ChessBoard 
-                        ref={this.child}
                         isWhite={this.state.first} 
                         myTurn={this.state.myTurn}
                         chessTile={this.state.chessTile}
@@ -116,8 +120,38 @@ export default class Game extends React.Component {
                         checkMate={this.checkMate}
                     />
                 </div>
-                <div>
-
+                <div className="InfoPanel">
+                    {this.state.winner === "" ? (
+                        <div>
+                            <div>
+                                Playing against {this.rival}
+                            </div>
+                            {this.state.myTurn ? (
+                                <div>
+                                    Your turn!
+                                </div>
+                            ) : (
+                                <div>
+                                    Waiting...
+                                </div>
+                            )}
+                        </div>
+                    ) : (
+                        <div>
+                            {this.state.winner === this.user ? (
+                                <div>
+                                    You win!
+                                </div>
+                            ) : (
+                                <div>
+                                    You lose
+                                </div>  
+                            )}
+                        </div>
+                    )}
+                    <button onClick={this.goBack}>
+                        Leave
+                    </button>
                 </div>
             </div>
         )

@@ -4,14 +4,14 @@ import io from 'socket.io-client'
 import "../css/lobby.css"
 
 const host = process.env.REACT_APP_SERVER_HOST
-const serverURL = `${host}`
+const port = process.env.PORT || 8000
+const serverURL = `${host}:${port}`
 
 export default class Lobby extends React.Component {
 
     constructor(props) {
         super(props)
         this.user = this.props.location.state.user
-        this.socket = io.connect(`${serverURL}/lobby`, {query: `user=${this.user}`})
         this.state = {
             numOnlineUsers: 0,
             isSearching: false
@@ -20,21 +20,20 @@ export default class Lobby extends React.Component {
 
     componentDidMount() {
 
+        this.socket = io.connect(`${serverURL}/lobby`, {query: `user=${this.user}`})
+
         // request number of online users at an interval
         let msTimeOffset = 5000
         this.socket.emit("req_online_num")
         setInterval(() => this.socket.emit("req_online_num"), msTimeOffset)
 
-        // socket event handlers
+        // handle online number
         this.socket.on("res_online_num", (num) => {
             this.setState({numOnlineUsers: num})
         })
-    }
 
-    playButtonPressed = (history) => {
-        this.setState({isSearching: true})
-        let searchingSocket = io.connect(`${serverURL}/searching`, {query: `user=${this.user}`})
-        searchingSocket.on("gameStarted", (players) => {
+        // handle game starting
+        this.socket.on("gameStarted", (players) => {
             if (!players.includes(this.user)) {
                 return
             }
@@ -51,6 +50,21 @@ export default class Lobby extends React.Component {
                 }
             })
         })
+
+        // handle server crash
+        this.socket.on("disconnect", () => {
+            this.cancelSearch()
+        })
+    }
+
+    playButtonPressed = (history) => {
+        this.setState({isSearching: true})
+        this.socket.emit("searchGame", this.user)
+    }
+
+    cancelSearch = () => {
+        this.setState({isSearching: false})
+        this.socket.emit("searchCancel", this.user)
     }
 
     render() {
@@ -78,7 +92,7 @@ export default class Lobby extends React.Component {
                         <div>
                             Searching... <br/>
                         </div>
-                        <button>
+                        <button onClick={this.cancelSearch}>
                             Cancel
                         </button>
                     </div>

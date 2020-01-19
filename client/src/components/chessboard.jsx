@@ -308,6 +308,10 @@ export default class ChessBoard extends React.Component {
         }
        
         if (valid) {
+            // Checkmate (change later)
+            if (this.state.chessTile[newPos[0]][newPos[1]][1] === "K") {
+                this.props.checkMate()
+            }
             this.setState(state => {
                 // set new position
                 state.chessTile[newPos[0]][newPos[1]] = piece
@@ -348,9 +352,6 @@ export default class ChessBoard extends React.Component {
                         </td>
                         })} </tr>
                 })} </table>
-                <button onClick={this.props.checkMate}>
-                    Click here to win!
-                </button>
             </div>
         )
     }
